@@ -65,7 +65,7 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* ===== Notes ===== */
+/* ===== Sticky Notes ===== */
 .note {
     position: fixed;
     font-size: 1.2rem;
@@ -74,11 +74,10 @@ button:hover {
     min-width: 180px;
     max-width: 250px;
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     opacity: 0;
     transition: all 0.8s ease;
     z-index: 3;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* ===== Floating Hearts ===== */
@@ -108,6 +107,7 @@ button:hover {
     z-index: 10;
     display: none;
     text-align: center;
+    opacity: 0.95;
 }
 </style>
 </head>
@@ -129,7 +129,7 @@ button:hover {
 </div>
 
 <!-- Happy Valentine Message -->
-<div id="happyValentine">Happy Valentine's Day 💖</div>
+<div id="happyValentine">Happy Valentine's Day, Love! 💖</div>
 
 <!-- Audio -->
 <audio id="music" loop>
@@ -202,6 +202,10 @@ function showNextNote() {
         noteEl.className = 'note';
         noteEl.textContent = messages[currentNote];
 
+        // Sticky note colors (pastel)
+        const colors = ['#FFFACD','#FFDAB9','#E0FFFF','#FFB6C1','#E6E6FA','#FFF0F5','#F0FFF0'];
+        noteEl.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+
         // Random position, avoid button
         const btn = document.getElementById('noteBtn').getBoundingClientRect();
         let x, y;
@@ -230,7 +234,8 @@ function showNextNote() {
         currentNote++;
     } else {
         // Show Happy Valentine's Day + heart confetti
-        document.getElementById('Happy Valentines, love!').style.display='block';
+        const happy = document.getElementById('happyValentine');
+        happy.style.display='block';
         heartConfetti();
     }
 }
@@ -241,7 +246,7 @@ function createHeart() {
     heart.className = 'heart';
     heart.textContent = '❤️';
 
-    // Random color pastel
+    // Random pastel color
     const colors = ['#ff4f8b','#ff7f9c','#ffb0c2','#ffc0cb','#ff99aa'];
     heart.style.color = colors[Math.floor(Math.random()*colors.length)];
 
@@ -253,7 +258,6 @@ function createHeart() {
     heart.style.animationDuration = (3 + Math.random()*3) + 's';
 
     document.body.appendChild(heart);
-
     setTimeout(()=>heart.remove(), 4000);
 }
 
@@ -275,7 +279,7 @@ function heartConfetti() {
 
         let top = -50;
         const speed = Math.random()*3 + 2;
-        const rotateSpeed = (Math.random()*360);
+        const rotateSpeed = Math.random()*360;
         const interval = setInterval(()=>{
             top+=speed;
             heart.style.top=top+'px';
