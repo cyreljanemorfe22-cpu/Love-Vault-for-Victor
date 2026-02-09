@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Victor ❤️</title>
+
+<style>
+
+/* ===== Full portrait background ===== */
+
+body {
+    margin: 0;
+    height: 100vh;
+
+    background: url("imagesbackground.jpg") no-repeat center center fixed;
+    background-size: cover;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+/* Soft overlay so image looks cinematic */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+}
+
+/* Center button */
+
+.container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+/* Music button */
+
+button {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    padding: 15px 25px;
+    font-size: 18px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="overlay"></div>
+
+<div class="container">
+
+<button onclick="playMusic()">
+Play Our Song 🎵
+</button>
+
+</div>
+
+<audio id="music" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+function playMusic() {
+    document.getElementById("music").play();
+}
+
+</script>
+
+</body>
+</html>
