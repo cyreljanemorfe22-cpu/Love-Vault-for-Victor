@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor in Verse ❤️</title>
 <style>
-/* ====== Full portrait background ===== */
+/* ====== Global ====== */
 body {
     margin: 0;
     height: 100vh;
@@ -18,7 +18,7 @@ body {
     overflow: hidden;
 }
 
-/* Soft overlay for cinematic effect */
+/* ====== Overlay ====== */
 .overlay {
     position: fixed;
     inset: 0;
@@ -26,8 +26,8 @@ body {
     z-index: 1;
 }
 
-/* ====== Container ====== */
-.container {
+/* ====== Splash / Main container ====== */
+.screen {
     position: relative;
     z-index: 2;
     background: rgba(255, 255, 255, 0.85);
@@ -37,16 +37,21 @@ body {
     max-width: 600px;
     width: 90%;
     text-align: center;
+    display: none; /* hidden by default */
 }
 
-/* ====== Heading ====== */
+.screen.active {
+    display: block; /* visible */
+}
+
+/* ====== Headings ====== */
 h1 {
     color: #ff4f8b;
     font-size: 2.5rem;
     margin-bottom: 20px;
 }
 
-/* ====== Button ====== */
+/* ====== Buttons ====== */
 button {
     background-color: #e62747;
     color: white;
@@ -87,18 +92,9 @@ button:hover {
 }
 
 @keyframes float {
-    0% {
-        transform: translateY(0) scale(1) rotate(0deg);
-        opacity: 1;
-    }
-    50% {
-        transform: translateY(-120px) scale(1.2) rotate(15deg);
-        opacity: 0.8;
-    }
-    100% {
-        transform: translateY(-250px) scale(0.8) rotate(-15deg);
-        opacity: 0;
-    }
+    0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: translateY(-120px) scale(1.2) rotate(15deg); opacity: 0.8; }
+    100% { transform: translateY(-250px) scale(0.8) rotate(-15deg); opacity: 0; }
 }
 </style>
 </head>
@@ -106,76 +102,77 @@ button:hover {
 
 <div class="overlay"></div>
 
-<div class="container">
+<!-- Splash Screen -->
+<div id="splash" class="screen active">
+    <h1>Welcome to Our Love Vault 💖</h1>
+    <p>Click below to play our love song and enter the vault</p>
+    <button onclick="enterVault()">Play Our Song & Enter 💌</button>
+</div>
+
+<!-- Main Screen -->
+<div id="main" class="screen">
     <h1>Love Vault for Victor 💌</h1>
     <div id="message" class="message" aria-live="polite"></div>
     <button onclick="showMessage()">See Your Love Notes ❤️</button>
 </div>
 
-<audio id="music" autoplay loop>
+<!-- Audio -->
+<audio id="music" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+// ===== Messages =====
 const messages = [
 "Thank you, asawa ko, for always making me feel safe and loved.",
 "Thank you for taking care of Pau-Pau with so much patience.",
-"Thank you, bossing, for making sure our finances are always secure.",
 "I love you, asawa ko, for always putting me first no matter what.",
 "Thank you, love-love, for making me laugh even on my hardest days.",
 "Thank you for handling everything so calmly and wisely.",
 "I love you, asawa ko, for your patience when I’m being makulit.",
-"Thank you, love-love, for hugging me when I feel overwhelmed.",
-"Thank you, for cooking delicious meals just for me.",
+"Thank you for hugging me when I feel overwhelmed.",
+"Thank you for cooking delicious meals just for me.",
 "I love you, asawa ko, for supporting my dreams and goals always.",
 "Thank you for remembering all the little things I love.",
-"Thank you, bossing, for being our rock and our safe place.",
+"Thank you for being our rock and safe place.",
 "I love you, asawa ko, for the way you smile at me every day.",
-"Thank you, love-love, for being so gentle and caring with me.",
+"Thank you for being gentle and caring with me.",
 "Thank you for making sure Pau-Pau is happy and healthy.",
-"I love you, asawa ko, for making our home feel warm and full of love.",
-"Thank you, for always listening to me without judgment.",
-"Thank you for your dedication to our family’s happiness.",
-"I love you, asawa ko, for all the small things you do that matter so much.",
-"Thank you, love-love, for cheering me up when I feel sad.",
-"Thank you for managing our finances so smartly.",
-"I love you, asawa ko, for your unwavering support through everything.",
+"I love you, asawa ko, for making our home warm and full of love.",
+"Thank you for always listening to me without judgment.",
+"I love you for all the small things you do that matter so much.",
+"Thank you for cheering me up when I feel sad.",
+"I love you, asawa ko, for unwavering support through everything.",
 "Thank you for making everyday moments so special.",
-"Thank you for teaching me patience and strength through your example.",
+"Thank you for teaching me patience and strength.",
 "I love you for holding my hand even when life gets hard.",
-"Thank you for spoiling me with your love and attention.",
+"Thank you for spoiling me with love and attention.",
 "Thank you for thinking of the future for both of us.",
-"I love you for the way you understand me like no one else.",
+"I love you for understanding me like no one else.",
 "Thank you for reminding me I am loved every day.",
-"Thank you for making sure we are always safe and comfortable.",
-"I love you for your comforting hugs that make everything okay.",
+"I love you for comforting hugs that make everything okay.",
 "Thank you for all the sweet surprises you plan for me.",
-"Thank you for your calm and steady heart that guides us.",
 "I love you for the way you make me feel truly cherished.",
-"Thank you for laughing with me, even at my silliness and letting me to bite you.FREE TATOOOOO!.",
-"Thank you for your patience when I take my time with things.",
+"Thank you for laughing with me, even at my silliness.",
 "I love you for taking care of my heart every single day.",
 "Thank you for always being honest and genuine with me.",
-"Thank you for ensuring our home is full of love and happiness.",
-"I love you for your sweet words that always make me smile.",
+"I love you for sweet words that make me smile.",
 "Thank you for caring about me and Pau-Pau so deeply.",
-"Thank you for your thoughtfulness in everything you do for us.",
 "I love you, asawa ko, for making me feel beautiful, safe, and happy.",
-"Thank you, love-love, for being my partner, my best friend, and my love.",
-"Thank you for always keeping us grounded and secure.",
-"I love you for the way you make every day brighter and better.",
+"Thank you for being my partner, my best friend, and my love.",
+"I love you for making every day brighter and better.",
 "Thank you for being my safe harbor in this crazy world.",
-"Thank you for loving me with your whole heart every single day.",
-"I love you, asawa ko, for making our love feel magical and eternal.",
+"I love you, asawa ko, for making our love magical and eternal.",
 "Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
 ];
 
+// ===== Show message & heart =====
 function showMessage() {
     const messageEl = document.getElementById("message");
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
     messageEl.classList.remove("show");
-    void messageEl.offsetWidth; 
+    void messageEl.offsetWidth;
     messageEl.textContent = randomMessage;
     messageEl.classList.add("show");
 
@@ -186,15 +183,25 @@ function createHeart() {
     const heart = document.createElement("span");
     heart.className = "heart";
     heart.textContent = "❤️";
-
     heart.style.left = Math.random() * 100 + "%";
     heart.style.bottom = "20px";
-
     document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 3000);
+}
 
-    setTimeout(() => {
-        heart.remove();
-    }, 3000);
+// ===== Enter Vault =====
+function enterVault() {
+    // Play music
+    const music = document.getElementById("music");
+    music.play().catch(() => {
+        // Some browsers require user interaction to play, but click here is enough
+    });
+
+    // Hide splash screen
+    document.getElementById("splash").classList.remove("active");
+
+    // Show main vault screen
+    document.getElementById("main").classList.add("active");
 }
 </script>
 
