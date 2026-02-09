@@ -5,18 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor in Verse ❤️</title>
 <style>
+/* ===== Global ===== */
 body {
     margin: 0;
     height: 100vh;
-    background: url("imagesbackground.jpg") no-repeat center center fixed;
-    background-size: cover;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
+    background: url("imagesbackground.jpg") no-repeat center center fixed;
+    background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* ===== Overlay ===== */
 .overlay {
     position: fixed;
     inset: 0;
@@ -24,71 +26,88 @@ body {
     z-index: 1;
 }
 
+/* ===== Screens ===== */
 .screen {
     position: relative;
     z-index: 2;
     text-align: center;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.85);
+    max-width: 600px;
+    width: 90%;
     display: none;
 }
 
-.screen.active {
-    display: block;
-}
+.screen.active { display: block; }
 
-#splash h1 {
+/* ===== Headings ===== */
+h1 {
     color: #ff4f8b;
-    font-size: 2.2rem;
-    margin-bottom: 10px;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
 }
 
+/* ===== Buttons ===== */
 button {
     background-color: #e62747;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
+    padding: 12px 25px;
+    border-radius: 25px;
     font-size: 1rem;
     cursor: pointer;
-    margin-top: 15px;
     transition: transform 0.2s ease, background-color 0.2s ease;
-    z-index: 5;
-    position: relative; /* make sure button is above notes */
+    margin-top: 20px;
 }
-
 button:hover {
     background-color: #ff2f74;
     transform: scale(1.05);
 }
 
-/* Note style */
+/* ===== Notes ===== */
 .note {
-    position: absolute;
-    padding: 20px 25px;
-    border-radius: 12px;
-    max-width: 350px;
+    position: fixed;
     font-size: 1.2rem;
-    color: #333;
-    background-color: #ffd6e8;
+    padding: 20px;
+    border-radius: 15px;
+    min-width: 180px;
+    max-width: 250px;
     text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    z-index: 2;
+    transition: all 0.8s ease;
+    z-index: 3;
 }
 
-/* Floating hearts */
+/* ===== Floating Hearts ===== */
 .heart {
-    position: absolute;
-    color: #ff4f8b;
-    font-size: 25px;
-    animation: float 3s ease-out forwards;
+    position: fixed;
     pointer-events: none;
+    font-size: 20px;
+    z-index: 5;
+    animation: floatUp 4s ease-out forwards;
 }
 
-@keyframes float {
-    0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-    50% { transform: translateY(-120px) scale(1.2) rotate(15deg); opacity: 0.8; }
-    100% { transform: translateY(-250px) scale(0.8) rotate(-15deg); opacity: 0; }
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    50% { transform: translateY(-80px) rotate(180deg); opacity: 0.8; }
+    100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+}
+
+/* ===== Happy Valentine ===== */
+#happyValentine {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: #ff2f74;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    z-index: 10;
+    display: none;
+    text-align: center;
 }
 </style>
 </head>
@@ -103,15 +122,20 @@ button:hover {
     <button onclick="enterVault()">Play Our Song & Enter 💌</button>
 </div>
 
-<!-- Main Vault Screen -->
+<!-- Main Vault -->
 <div id="main" class="screen">
     <h1>Love Vault for Victor 💌</h1>
-    <button id="nextNoteBtn" onclick="showNote()">See Your Love Notes ❤️</button>
+    <button onclick="showNextNote()" id="noteBtn">See Your Love Notes ❤️</button>
 </div>
 
+<!-- Happy Valentine Message -->
+<div id="happyValentine">Happy Valentine's Day 💖</div>
+
+<!-- Audio -->
 <audio id="music" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
+<audio id="popSound" src="pop.mp3"></audio>
 
 <script>
 // ===== Messages =====
@@ -144,8 +168,7 @@ const messages = [
 "Thank you for reminding me I am loved every day.",
 "I love you for comforting hugs that make everything okay.",
 "Thank you for all the sweet surprises you plan for me.",
-"I love you for the way you make me feel truly cherished.",
-"Thank you for laughing with me, even at my silliness.",
+"I love you for laughing with me, even at my silliness.",
 "I love you for taking care of my heart every single day.",
 "Thank you for always being honest and genuine with me.",
 "I love you for sweet words that make me smile.",
@@ -158,77 +181,111 @@ const messages = [
 "Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
 ];
 
-// Keep track of notes
-let shownNotes = [];
-
-// ===== Show note =====
-function showNote() {
-    if(messages.length === 0) return;
-
-    // Random message
-    const randomIndex = Math.floor(Math.random() * messages.length);
-    const text = messages.splice(randomIndex, 1)[0];
-
-    const note = document.createElement("div");
-    note.className = "note";
-    note.textContent = text;
-
-    // Random pastel color
-    const colors = ["#ffecb3","#ffd6e8","#c8facc","#c5d6ff","#ffe0b3","#f8c5ff"];
-    note.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
-    // Random position avoiding button (button approx bottom-center)
-    const padding = 20;
-    let x, y;
-    const btn = document.getElementById("nextNoteBtn");
-    const btnRect = btn.getBoundingClientRect();
-
-    do {
-        x = Math.random() * (window.innerWidth - 350 - padding); // note width
-        y = Math.random() * (window.innerHeight - 120 - padding); // note height
-    } while (
-        x < btnRect.right && x + 350 > btnRect.left && 
-        y < btnRect.bottom && y + 60 > btnRect.top
-    );
-
-    note.style.left = `${x}px`;
-    note.style.top = `${y}px`;
-
-    // Random rotation
-    const angle = Math.random()*20 - 10;
-    note.style.transform = `scale(0.8) rotate(${angle}deg)`;
-    document.body.appendChild(note);
-
-    // Animate fade in
-    setTimeout(() => {
-        note.style.opacity = 1;
-        note.style.transform = `scale(1) rotate(${angle}deg)`;
-    }, 50);
-
-    // Floating hearts
-    createHeart();
-
-    shownNotes.push(note);
-}
-
-// ===== Floating hearts =====
-function createHeart() {
-    const heart = document.createElement("span");
-    heart.className = "heart";
-    heart.textContent = "❤️";
-    heart.style.left = Math.random()*100 + "%";
-    heart.style.bottom = "20px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 3000);
-}
+// ===== Variables =====
+let currentNote = 0;
 
 // ===== Enter Vault =====
 function enterVault() {
-    const music = document.getElementById("music");
-    music.play().catch(() => {});
-
+    document.getElementById("music").play().catch(()=>{});
     document.getElementById("splash").classList.remove("active");
     document.getElementById("main").classList.add("active");
+}
+
+// ===== Show Next Note =====
+function showNextNote() {
+    // Remove old note if exists
+    const oldNote = document.querySelector('.note');
+    if(oldNote) oldNote.remove();
+
+    if(currentNote < messages.length){
+        const noteEl = document.createElement('div');
+        noteEl.className = 'note';
+        noteEl.textContent = messages[currentNote];
+
+        // Random position, avoid button
+        const btn = document.getElementById('noteBtn').getBoundingClientRect();
+        let x, y;
+        do {
+            x = Math.random() * (window.innerWidth - 260);
+            y = Math.random() * (window.innerHeight - 150);
+        } while(
+            x > btn.left - 200 && x < btn.right + 200 &&
+            y > btn.top - 100 && y < btn.bottom + 100
+        );
+
+        noteEl.style.left = x + 'px';
+        noteEl.style.top = y + 'px';
+        noteEl.style.opacity = 0;
+        document.body.appendChild(noteEl);
+
+        // Fade in
+        setTimeout(()=>{noteEl.style.opacity = 1}, 50);
+
+        // Floating hearts
+        for(let i=0;i<5;i++) createHeart();
+
+        // Optional pop sound
+        document.getElementById('popSound').play().catch(()=>{});
+
+        currentNote++;
+    } else {
+        // Show Happy Valentine's Day + heart confetti
+        document.getElementById('Happy Valentines, love!').style.display='block';
+        heartConfetti();
+    }
+}
+
+// ===== Floating Hearts =====
+function createHeart() {
+    const heart = document.createElement('span');
+    heart.className = 'heart';
+    heart.textContent = '❤️';
+
+    // Random color pastel
+    const colors = ['#ff4f8b','#ff7f9c','#ffb0c2','#ffc0cb','#ff99aa'];
+    heart.style.color = colors[Math.floor(Math.random()*colors.length)];
+
+    // Random position
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = Math.random() * window.innerHeight + 'px';
+
+    // Random rotation animation duration
+    heart.style.animationDuration = (3 + Math.random()*3) + 's';
+
+    document.body.appendChild(heart);
+
+    setTimeout(()=>heart.remove(), 4000);
+}
+
+// ===== Heart Confetti =====
+function heartConfetti() {
+    const totalHearts = 50;
+    for(let i=0;i<totalHearts;i++){
+        const heart = document.createElement('span');
+        heart.textContent = '❤️';
+        heart.style.position = 'fixed';
+        heart.style.left = Math.random()*window.innerWidth+'px';
+        heart.style.top = '-50px';
+        heart.style.fontSize = (20 + Math.random()*30)+'px';
+        heart.style.color = ['#ff4f8b','#ff7f9c','#ffb0c2','#ffc0cb','#ff99aa'][Math.floor(Math.random()*5)];
+        heart.style.zIndex = 10;
+        heart.style.pointerEvents='none';
+        heart.style.opacity=Math.random();
+        document.body.appendChild(heart);
+
+        let top = -50;
+        const speed = Math.random()*3 + 2;
+        const rotateSpeed = (Math.random()*360);
+        const interval = setInterval(()=>{
+            top+=speed;
+            heart.style.top=top+'px';
+            heart.style.transform='rotate('+rotateSpeed+'deg)';
+            if(top>window.innerHeight+50){
+                heart.remove();
+                clearInterval(interval);
+            }
+        },20);
+    }
 }
 </script>
 
