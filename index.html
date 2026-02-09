@@ -24,7 +24,6 @@ body {
     z-index: 1;
 }
 
-/* Screens */
 .screen {
     position: relative;
     z-index: 2;
@@ -36,7 +35,6 @@ body {
     display: block;
 }
 
-/* Splash screen */
 #splash h1 {
     color: #ff4f8b;
     font-size: 2.2rem;
@@ -47,12 +45,14 @@ button {
     background-color: #e62747;
     color: white;
     border: none;
-    padding: 10px 20px; /* smaller button */
+    padding: 10px 20px;
     border-radius: 30px;
     font-size: 1rem;
     cursor: pointer;
     margin-top: 15px;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 5;
+    position: relative; /* make sure button is above notes */
 }
 
 button:hover {
@@ -63,16 +63,16 @@ button:hover {
 /* Note style */
 .note {
     position: absolute;
-    padding: 20px 30px;
+    padding: 20px 25px;
     border-radius: 12px;
-    max-width: 400px;
+    max-width: 350px;
     font-size: 1.2rem;
     color: #333;
     background-color: #ffd6e8;
     text-align: center;
     opacity: 0;
-    transform: scale(0.8) rotate(0deg);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: scale(0.8);
+    transition: opacity 0.6s ease, transform 0.6s ease;
     z-index: 2;
 }
 
@@ -114,7 +114,7 @@ button:hover {
 </audio>
 
 <script>
-// Messages
+// ===== Messages =====
 const messages = [
 "Thank you, asawa ko, for always making me feel safe and loved.",
 "Thank you for taking care of Pau-Pau with so much patience.",
@@ -158,18 +158,11 @@ const messages = [
 "Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
 ];
 
-// State
-let currentNote = null;
+// Keep track of notes
+let shownNotes = [];
 
-// Show Note
+// ===== Show note =====
 function showNote() {
-    // Fade out previous note
-    if(currentNote) {
-        currentNote.style.opacity = 0;
-        currentNote.style.transform = "scale(0.8) rotate(0deg)";
-        setTimeout(() => currentNote.remove(), 500);
-    }
-
     if(messages.length === 0) return;
 
     // Random message
@@ -184,18 +177,29 @@ function showNote() {
     const colors = ["#ffecb3","#ffd6e8","#c8facc","#c5d6ff","#ffe0b3","#f8c5ff"];
     note.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-    // Random slight position offset (centered by default)
-    const x = window.innerWidth/2 - 200 + (Math.random()*100 - 50);
-    const y = window.innerHeight/2 - 50 + (Math.random()*100 - 50);
+    // Random position avoiding button (button approx bottom-center)
+    const padding = 20;
+    let x, y;
+    const btn = document.getElementById("nextNoteBtn");
+    const btnRect = btn.getBoundingClientRect();
+
+    do {
+        x = Math.random() * (window.innerWidth - 350 - padding); // note width
+        y = Math.random() * (window.innerHeight - 120 - padding); // note height
+    } while (
+        x < btnRect.right && x + 350 > btnRect.left && 
+        y < btnRect.bottom && y + 60 > btnRect.top
+    );
+
     note.style.left = `${x}px`;
     note.style.top = `${y}px`;
 
-    // Random slight rotation
+    // Random rotation
     const angle = Math.random()*20 - 10;
     note.style.transform = `scale(0.8) rotate(${angle}deg)`;
     document.body.appendChild(note);
 
-    // Fade in
+    // Animate fade in
     setTimeout(() => {
         note.style.opacity = 1;
         note.style.transform = `scale(1) rotate(${angle}deg)`;
@@ -204,10 +208,10 @@ function showNote() {
     // Floating hearts
     createHeart();
 
-    currentNote = note;
+    shownNotes.push(note);
 }
 
-// Floating hearts
+// ===== Floating hearts =====
 function createHeart() {
     const heart = document.createElement("span");
     heart.className = "heart";
@@ -218,7 +222,7 @@ function createHeart() {
     setTimeout(() => heart.remove(), 3000);
 }
 
-// Enter Vault
+// ===== Enter Vault =====
 function enterVault() {
     const music = document.getElementById("music");
     music.play().catch(() => {});
