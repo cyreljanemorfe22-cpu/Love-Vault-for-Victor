@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor in Verse ❤️</title>
 <style>
-/* ===== Global ===== */
 body {
     margin: 0;
     height: 100vh;
@@ -13,9 +12,11 @@ body {
     background-size: cover;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* ===== Overlay ===== */
 .overlay {
     position: fixed;
     inset: 0;
@@ -23,11 +24,10 @@ body {
     z-index: 1;
 }
 
-/* ===== Screens ===== */
+/* Screens */
 .screen {
     position: relative;
     z-index: 2;
-    padding: 50px;
     text-align: center;
     display: none;
 }
@@ -36,23 +36,22 @@ body {
     display: block;
 }
 
-/* ===== Headings ===== */
-h1 {
+/* Splash screen */
+#splash h1 {
     color: #ff4f8b;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
 }
 
-/* ===== Buttons ===== */
 button {
     background-color: #e62747;
     color: white;
     border: none;
-    padding: 15px 30px;
+    padding: 10px 20px; /* smaller button */
     border-radius: 30px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 15px;
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -61,22 +60,23 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* ===== Sticky Notes ===== */
-.sticky-note {
+/* Note style */
+.note {
     position: absolute;
-    padding: 15px 20px;
+    padding: 20px 30px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    max-width: 200px;
-    font-size: 1rem;
+    max-width: 400px;
+    font-size: 1.2rem;
     color: #333;
+    background-color: #ffd6e8;
+    text-align: center;
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    white-space: pre-wrap;
+    transform: scale(0.8) rotate(0deg);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 2;
 }
 
-/* ===== Floating Hearts ===== */
+/* Floating hearts */
 .heart {
     position: absolute;
     color: #ff4f8b;
@@ -103,19 +103,18 @@ button:hover {
     <button onclick="enterVault()">Play Our Song & Enter 💌</button>
 </div>
 
-<!-- Main Screen -->
+<!-- Main Vault Screen -->
 <div id="main" class="screen">
     <h1>Love Vault for Victor 💌</h1>
-    <button onclick="showStickyNote()">See Your Love Notes ❤️</button>
+    <button id="nextNoteBtn" onclick="showNote()">See Your Love Notes ❤️</button>
 </div>
 
-<!-- Audio -->
 <audio id="music" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-// ===== Messages =====
+// Messages
 const messages = [
 "Thank you, asawa ko, for always making me feel safe and loved.",
 "Thank you for taking care of Pau-Pau with so much patience.",
@@ -156,70 +155,70 @@ const messages = [
 "I love you for making every day brighter and better.",
 "Thank you for being my safe harbor in this crazy world.",
 "I love you, asawa ko, for making our love magical and eternal.",
-"Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO.",
-// Add extra messages until 50 total here
-"Thank you for saying YES to my CRAVINGSSSS kahit paubos na ang SAVINGSSSS",
-"Message 42",
-"Message 43",
-"Message 44",
-"Message 45",
-"Message 46",
-"Message 47",
-"Message 48",
-"Message 49",
-"Message 50"
+"Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
 ];
 
-// ===== Show sticky note =====
-function showStickyNote() {
+// State
+let currentNote = null;
+
+// Show Note
+function showNote() {
+    // Fade out previous note
+    if(currentNote) {
+        currentNote.style.opacity = 0;
+        currentNote.style.transform = "scale(0.8) rotate(0deg)";
+        setTimeout(() => currentNote.remove(), 500);
+    }
+
     if(messages.length === 0) return;
 
+    // Random message
     const randomIndex = Math.floor(Math.random() * messages.length);
-    const text = messages.splice(randomIndex, 1)[0]; // remove message once used
+    const text = messages.splice(randomIndex, 1)[0];
 
     const note = document.createElement("div");
-    note.className = "sticky-note";
+    note.className = "note";
     note.textContent = text;
 
     // Random pastel color
     const colors = ["#ffecb3","#ffd6e8","#c8facc","#c5d6ff","#ffe0b3","#f8c5ff"];
     note.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-    // Random position
-    const padding = 20;
-    const x = Math.random() * (window.innerWidth - 220 - padding); // 220 = max-width of note
-    const y = Math.random() * (window.innerHeight - 120 - padding); // 120 approx height
+    // Random slight position offset (centered by default)
+    const x = window.innerWidth/2 - 200 + (Math.random()*100 - 50);
+    const y = window.innerHeight/2 - 50 + (Math.random()*100 - 50);
     note.style.left = `${x}px`;
     note.style.top = `${y}px`;
 
-    // Random rotation
-    const angle = (Math.random() * 30) - 15; // -15 to 15 degrees
-    note.style.transform = `rotate(${angle}deg) scale(0.8)`;
-    
+    // Random slight rotation
+    const angle = Math.random()*20 - 10;
+    note.style.transform = `scale(0.8) rotate(${angle}deg)`;
     document.body.appendChild(note);
 
-    // Animate fade in
+    // Fade in
     setTimeout(() => {
         note.style.opacity = 1;
-        note.style.transform = `rotate(${angle}deg) scale(1)`;
+        note.style.transform = `scale(1) rotate(${angle}deg)`;
     }, 50);
 
-    // Optional: floating hearts
+    // Floating hearts
     createHeart();
+
+    currentNote = note;
 }
 
-// ===== Floating Hearts =====
+// Floating hearts
 function createHeart() {
     const heart = document.createElement("span");
     heart.className = "heart";
     heart.textContent = "❤️";
-    heart.style.left = Math.random() * 100 + "%";
+    heart.style.left = Math.random()*100 + "%";
     heart.style.bottom = "20px";
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 3000);
 }
 
-// ===== Enter Vault =====
+// Enter Vault
 function enterVault() {
     const music = document.getElementById("music");
     music.play().catch(() => {});
