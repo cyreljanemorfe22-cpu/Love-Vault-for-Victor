@@ -184,13 +184,6 @@ const messages = [
 // ===== Variables =====
 let currentNote = 0;
 
-// ===== Enter Vault =====
-function enterVault() {
-    document.getElementById("music").play().catch(()=>{});
-    document.getElementById("splash").classList.remove("active");
-    document.getElementById("main").classList.add("active");
-}
-
 // ===== Show Next Note =====
 function showNextNote() {
     // Remove old note if exists
@@ -233,65 +226,25 @@ function showNextNote() {
 
         currentNote++;
     } else {
-        // Show Happy Valentine's Day + heart confetti
+        // ===== ENDING: Clear screen and show Happy Valentine's Day =====
+
+        // Remove the button
+        const btn = document.getElementById('noteBtn');
+        if(btn) btn.remove();
+
+        // Remove any remaining sticky notes
+        document.querySelectorAll('.note').forEach(n => n.remove());
+
+        // Show Happy Valentine message
         const happy = document.getElementById('happyValentine');
-        happy.style.display='block';
+        happy.style.display = 'block';
+
+        // Heart confetti celebration
         heartConfetti();
-    }
-}
-
-// ===== Floating Hearts =====
-function createHeart() {
-    const heart = document.createElement('span');
-    heart.className = 'heart';
-    heart.textContent = '❤️';
-
-    // Random pastel color
-    const colors = ['#ff4f8b','#ff7f9c','#ffb0c2','#ffc0cb','#ff99aa'];
-    heart.style.color = colors[Math.floor(Math.random()*colors.length)];
-
-    // Random position
-    heart.style.left = Math.random() * window.innerWidth + 'px';
-    heart.style.top = Math.random() * window.innerHeight + 'px';
-
-    // Random rotation animation duration
-    heart.style.animationDuration = (3 + Math.random()*3) + 's';
-
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(), 4000);
-}
-
-// ===== Heart Confetti =====
-function heartConfetti() {
-    const totalHearts = 50;
-    for(let i=0;i<totalHearts;i++){
-        const heart = document.createElement('span');
-        heart.textContent = '❤️';
-        heart.style.position = 'fixed';
-        heart.style.left = Math.random()*window.innerWidth+'px';
-        heart.style.top = '-50px';
-        heart.style.fontSize = (20 + Math.random()*30)+'px';
-        heart.style.color = ['#ff4f8b','#ff7f9c','#ffb0c2','#ffc0cb','#ff99aa'][Math.floor(Math.random()*5)];
-        heart.style.zIndex = 10;
-        heart.style.pointerEvents='none';
-        heart.style.opacity=Math.random();
-        document.body.appendChild(heart);
-
-        let top = -50;
-        const speed = Math.random()*3 + 2;
-        const rotateSpeed = Math.random()*360;
-        const interval = setInterval(()=>{
-            top+=speed;
-            heart.style.top=top+'px';
-            heart.style.transform='rotate('+rotateSpeed+'deg)';
-            if(top>window.innerHeight+50){
-                heart.remove();
-                clearInterval(interval);
-            }
-        },20);
     }
 }
 </script>
 
 </body>
 </html>
+
