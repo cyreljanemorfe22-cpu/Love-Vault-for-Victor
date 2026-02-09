@@ -86,12 +86,11 @@ button:hover {
     pointer-events: none;
     font-size: 20px;
     z-index: 5;
-    animation: floatUp 4s ease-out forwards;
+    animation: floatUp 4s linear forwards;
 }
 
 @keyframes floatUp {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    50% { transform: translateY(-80px) rotate(180deg); opacity: 0.8; }
     100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
 }
 
@@ -184,9 +183,16 @@ const messages = [
 // ===== Variables =====
 let currentNote = 0;
 
+// ===== Enter Vault =====
+function enterVault(){
+    document.getElementById('music').play().catch(()=>{});
+    document.getElementById('splash').classList.remove('active');
+    document.getElementById('main').classList.add('active');
+}
+
 // ===== Show Next Note =====
-function showNextNote() {
-    // Remove old note if exists
+function showNextNote(){
+    // Remove old note
     const oldNote = document.querySelector('.note');
     if(oldNote) oldNote.remove();
 
@@ -195,20 +201,18 @@ function showNextNote() {
         noteEl.className = 'note';
         noteEl.textContent = messages[currentNote];
 
-        // Sticky note colors (pastel)
+        // Sticky note colors
         const colors = ['#FFFACD','#FFDAB9','#E0FFFF','#FFB6C1','#E6E6FA','#FFF0F5','#F0FFF0'];
         noteEl.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
 
-        // Random position, avoid button
+        // Random position (avoid button)
         const btn = document.getElementById('noteBtn').getBoundingClientRect();
         let x, y;
         do {
             x = Math.random() * (window.innerWidth - 260);
             y = Math.random() * (window.innerHeight - 150);
-        } while(
-            x > btn.left - 200 && x < btn.right + 200 &&
-            y > btn.top - 100 && y < btn.bottom + 100
-        );
+        } while(x > btn.left - 200 && x < btn.right + 200 &&
+                y > btn.top - 100 && y < btn.bottom + 100);
 
         noteEl.style.left = x + 'px';
         noteEl.style.top = y + 'px';
@@ -216,35 +220,52 @@ function showNextNote() {
         document.body.appendChild(noteEl);
 
         // Fade in
-        setTimeout(()=>{noteEl.style.opacity = 1}, 50);
+        setTimeout(()=>{noteEl.style.opacity = 1},50);
 
         // Floating hearts
         for(let i=0;i<5;i++) createHeart();
 
-        // Optional pop sound
+        // Pop sound
         document.getElementById('popSound').play().catch(()=>{});
 
         currentNote++;
     } else {
         // ===== ENDING: Clear screen and show Happy Valentine's Day =====
-
-        // Remove the button
         const btn = document.getElementById('noteBtn');
         if(btn) btn.remove();
-
-        // Remove any remaining sticky notes
         document.querySelectorAll('.note').forEach(n => n.remove());
 
-        // Show Happy Valentine message
         const happy = document.getElementById('happyValentine');
         happy.style.display = 'block';
 
-        // Heart confetti celebration
+        // Heart confetti
         heartConfetti();
     }
+}
+
+// ===== Heart Function =====
+function createHeart(){
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = '💖';
+    heart.style.left = Math.random()*window.innerWidth+'px';
+    heart.style.top = window.innerHeight+'px';
+    heart.style.fontSize = (15+Math.random()*15)+'px';
+    heart.style.color = ['#ff2f74','#ffb6c1','#ffc0cb'][Math.floor(Math.random()*3)];
+    heart.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),4000);
+}
+
+// ===== Heart Confetti =====
+function heartConfetti(){
+    const interval = setInterval(()=>{
+        createHeart();
+    },100);
+    // Stop after 10 seconds
+    setTimeout(()=>clearInterval(interval),10000);
 }
 </script>
 
 </body>
 </html>
-
