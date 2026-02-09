@@ -46,7 +46,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* ====== Buttons ====== */
+/* ====== Button ====== */
 button {
     background-color: #e62747;
     color: white;
@@ -110,10 +110,9 @@ button:hover {
     <h1>Love Vault for Victor 💌</h1>
     <div id="message" class="message" aria-live="polite"></div>
     <button onclick="showMessage()">See Your Love Notes ❤️</button>
-    <button onclick="playMusic()">Play Our Song 🎵</button>
 </div>
 
-<audio id="music" loop>
+<audio id="music" autoplay loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
@@ -168,7 +167,7 @@ const messages = [
 "Thank you for being my safe harbor in this crazy world.",
 "Thank you for loving me with your whole heart every single day.",
 "I love you, asawa ko, for making our love feel magical and eternal.",
-"Thank you, love-love, for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
+"Thank you for being you, my forever, my heart, my VICTOR R.A. IGNACIO."
 ];
 
 function showMessage() {
@@ -196,10 +195,6 @@ function createHeart() {
     setTimeout(() => {
         heart.remove();
     }, 3000);
-}
-
-function playMusic() {
-    document.getElementById("music").play();
 }
 </script>
 
